@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Text to Speech</title>
+    </head>
+    <body>
+        <form action="#" method="post" onsubmit="return false;">
+            <input type="text" name="text" id="text" placeholder="Enter text to convert to speech">
+            <input type="submit" value="Convert to Speech" onclick="sendRequest()">
+        </form>
+        <div id="output"></div>
+        <audio controls>
+        <source src="/output.mp3" type="audio/mpeg">
+        Your browser does not support the audio element.
+        </audio>
+        <script>
+            function sendRequest(event) {
+                var text = document.getElementById("text").value;
+                const formData = new FormData();
+                formData.append('text', text);
+                fetch('/tts', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    return response.json();
+                })
+                .then(response => {
+                    const { message } = response;
+                    fetchAudio(message);
+                });
+            }
+
+            function fetchAudio(message) {
+                const formData = new FormData();
+                formData.append('message', message);
+                fetch('/getAudio',{
+                    method: 'POST',
+                    body: formData
+                }).then(response => {
+                    return response.blob();
+                })
+                .then(blob => {
+                        var audio = document.createElement("audio");
+                        const url = URL.createObjectURL(blob);
+                        audio.src = url;
+                        audio.controls = true;
+                        document.getElementById("output").appendChild(audio);
+                })
+                .catch(error => {
+                    console.log(error);
+                });
+            }
+        </script>
+    </body>
+</html>
