@@ -35,5 +35,8 @@ class AIGirlfriend:
     
     def get_response_from_all_messages(self, messages):
         gf_message = self.get_completion_from_messages(messages)
-        return gf_message
+        messages.append({"role": "assistant", "content": gf_message})
+        return messages
     
+
+
