@@ -1,7 +1,9 @@
 import os
 import openai
-openai.api_key  = os.environ['OPENAI_API_KEY']
+from dotenv import load_dotenv
+load_dotenv()
 
+openai.api_key  = os.getenv('OPENAI_API_KEY')
 
 class AIGirlfriend:
     def __init__(self) -> None:

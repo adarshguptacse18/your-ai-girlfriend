@@ -1,6 +1,9 @@
 import requests
 import uuid
 import os
+from dotenv import load_dotenv
+load_dotenv()
+
 CHUNK_SIZE = 1024
 url = "https://api.elevenlabs.io/v1/text-to-speech/EXAVITQu4vr4xnSDxMaL"
 
