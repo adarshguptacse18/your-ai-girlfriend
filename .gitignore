@@ -1,3 +1,4 @@
 .vercel
 .env
 .env.development.local
+__pycache__/
