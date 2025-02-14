@@ -503,6 +503,30 @@
                         recordBtn.style.background = 'rgb(0, 196, 65)';
                     }
                 });
+
+                // Add keyboard control for recording
+                document.addEventListener('keydown', (event) => {
+                    // Use spacebar (32) to start recording
+                    if (event.keyCode === 32 && !voiceActive && !event.repeat && !msgerInput.matches(':focus')) {
+                        event.preventDefault(); // Prevent scrolling with spacebar
+                        voiceActive = true;
+                        fullTranscript = '';
+                        recognition.start();
+                        recordBtn.innerHTML = '<i class="fas fa-microphone-slash"></i> Stop';
+                        recordBtn.style.background = '#ff4444';
+                    }
+                });
+
+                document.addEventListener('keyup', (event) => {
+                    // Stop recording when spacebar is released
+                    if (event.keyCode === 32 && voiceActive && !msgerInput.matches(':focus')) {
+                        event.preventDefault();
+                        voiceActive = false;
+                        recognition.stop();
+                        recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Record';
+                        recordBtn.style.background = 'rgb(0, 196, 65)';
+                    }
+                });
             
         </script>
         <script type="module">
@@ -533,4 +557,4 @@
         <!-- Facebook -->
 
     </body>
-</htmlI
+</html>
