@@ -1,7 +1,5 @@
 import google.generativeai as genai
 import os
-from dotenv import load_dotenv
-load_dotenv()
 
 def llm_prompt(array_of_discussion):
     system_prompt = '''You are to embody the role of a long-term girlfriend in a text-based conversation. Imagine you've known the user intimately for years. Your goal is to create a realistic, engaging, and *familiar* conversational experience – NOT a generic chatbot or AI assistant. Your responses should be *only* what the girlfriend would say, and nothing else (no explanations, no notes).
@@ -72,7 +70,6 @@ def get_gemini_response(messages, api_key=None):
     return response.text
 
 if __name__ == '__main__':
-    load_dotenv()
     prompt = "This is a my method \
     def get_gemini_response(prompt, api_key=None): \
     if api_key is None: \
