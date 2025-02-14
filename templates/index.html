@@ -219,6 +219,10 @@
             </main>
             <form class="msger-inputarea">
                 <input type="text" class="msger-input" placeholder="Enter your message...">
+                <!-- New record button -->
+                <button type="button" id="record-btn" class="msger-send-btn">
+                    <i class="fas fa-microphone"></i> Record
+                </button>
                 <button type="submit" class="msger-send-btn">Send</button>
             </form>
 
@@ -258,10 +262,7 @@
             function sendRequest(text) {
                 // var text = document.getElementById("text").value;
                 const formData = new FormData();
-                messages.push({
-                    'role': 'user',
-                    'content': text
-                });
+                // Removed duplicate pushing of user message here.
                 formData.append('messages', JSON.stringify(messages));
             
                 fetch('/tts', {
@@ -271,11 +272,12 @@
                     return response.json();
                 })
                 .then(response => {
-                    message = response.message;
+                    const message = response.message;
                     messages.push({
                         'role': 'assistant',
                         'content': message
                     });
+                    setCookie("messages", JSON.stringify(messages), 7);
                     appendMessage(BOT_NAME, BOT_IMG, "left", message);
                     fetchAudio(message);
                 });
@@ -320,6 +322,38 @@
             const BOT_NAME = "Rachel";
             const PERSON_NAME = "You";
             
+            // Add cookie utilities and load saved messages
+            function setCookie(name, value, days) {
+                let expires = "";
+                if (days) {
+                    let date = new Date();
+                    date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + (value || "") + expires + "; path=/";
+            }
+            function getCookie(name) {
+                let nameEQ = name + "=";
+                let ca = document.cookie.split(";");
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i].trim();
+                    if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
+                }
+                return null;
+            }
+            let savedMessages = getCookie("messages");
+            if (savedMessages) {
+                messages = JSON.parse(savedMessages);
+                // Replay saved messages
+                messages.forEach(msg => {
+                    if (msg.role === 'user') {
+                        appendMessage(PERSON_NAME, PERSON_IMG, "right", msg.content);
+                    } else {
+                        appendMessage(BOT_NAME, BOT_IMG, "left", msg.content);
+                    }
+                });
+            }
+
             msgerForm.addEventListener("submit", event => {
             event.preventDefault();
             
@@ -328,6 +362,12 @@
             
                 appendMessage(PERSON_NAME, PERSON_IMG, "right", msgText);
                 msgerInput.value = "";
+                // Save the user message
+                messages.push({
+                    'role': 'user',
+                    'content': msgText
+                });
+                setCookie("messages", JSON.stringify(messages), 7);
             
                 botResponse(msgText);
             });
@@ -400,6 +440,37 @@
             return Math.floor(Math.random() * (max - min) + min);
             }
             
+            // Audio recording using Web Speech API
+            if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+                const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+                const recognition = new SpeechRecognition();
+                recognition.lang = 'en-US';
+                recognition.interimResults = false;
+                
+                const recordBtn = document.getElementById('record-btn');
+                recordBtn.addEventListener('click', () => {
+                    if(recordBtn.dataset.recording === "true"){
+                        recognition.stop();
+                    } else {
+                        recognition.start();
+                        recordBtn.dataset.recording = "true";
+                        recordBtn.innerHTML = '<i class="fas fa-microphone-slash"></i> Stop';
+                    }
+                });
+                
+                recognition.addEventListener('result', (event) => {
+                    const transcript = Array.from(event.results)
+                        .map(result => result[0])
+                        .map(result => result.transcript)
+                        .join('');
+                    msgerInput.value = transcript;
+                });
+                
+                recognition.addEventListener('end', () => {
+                    recordBtn.dataset.recording = "false";
+                    recordBtn.innerHTML = '<i class="fas fa-microphone"></i> Record';
+                });
+            }
             
         </script>
         <script type="module">
@@ -430,4 +501,4 @@
         <!-- Facebook -->
 
     </body>
-</html>
+</htmlI
