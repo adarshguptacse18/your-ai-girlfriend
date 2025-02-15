@@ -330,6 +330,7 @@
                     date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
                     expires = "; expires=" + date.toUTCString();
                 }
+                console.log("Cookie saved")
                 document.cookie = name + "=" + (value || "") + expires + "; path=/";
             }
             function getCookie(name) {
@@ -367,7 +368,6 @@
                     'role': 'user',
                     'content': msgText
                 });
-                setCookie("messages", JSON.stringify(messages), 7);
             
                 botResponse(msgText);
             });

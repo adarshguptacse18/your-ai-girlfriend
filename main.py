@@ -19,6 +19,7 @@ def tts():
 @app.route("/getAudio", methods=["POST"])
 def getAudio():
     text = request.form.get("message")
+    text = text.replace('*', '')
     id = conver_to_audio(text)
     return send_file(id, as_attachment=True)
 
